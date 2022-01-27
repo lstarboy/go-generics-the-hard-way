@@ -23,27 +23,170 @@ import (
 
 	blist "go-generics-the-hard-way/06-benchmarks/lists/boxed"
 	glist "go-generics-the-hard-way/06-benchmarks/lists/generic"
-	tlist "go-generics-the-hard-way/06-benchmarks/lists/typed"
 )
 
 func BenchmarkBoxing(b *testing.B) {
+
+	var x int64
+	var px = new(int64)
+
+	var s1 struct {
+		a int32
+		b int64
+	}
+	var ps1 = new(struct {
+		a int32
+		b int64
+	})
+
+	var s2 struct {
+		a string
+	}
+	var ps2 = new(struct {
+		a string
+	})
+
+	var b15 struct {
+		a byte
+		b byte
+		c byte
+		d byte
+		e byte
+		f byte
+		g byte
+	}
+	var b16 [16]byte
+
 	b.Run("boxed", func(b *testing.B) {
-		var list blist.List
-		for i := 0; i < b.N; i++ {
-			list = append(list, i)
-		}
+		/*b.Run("struct", func(b *testing.B) {
+			list := make(blist.List, b.N)
+			//b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				_ = interface{}(s1)
+			}
+
+		})*/
+
+		b.Run("int64", func(b *testing.B) {
+			list := make(blist.List, b.N)
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				list[i] = float64(0)
+			}
+		})
+		b.Run("*int64", func(b *testing.B) {
+			list := make(blist.List, b.N)
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				list[i] = px
+			}
+		})
+		b.Run("struct{int32; int64}", func(b *testing.B) {
+			list := make(blist.List, b.N)
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				list[i] = s1
+			}
+		})
+		b.Run("*struct{int32; int64}", func(b *testing.B) {
+			list := make(blist.List, b.N)
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				list[i] = ps1
+			}
+		})
+		b.Run("struct{string}", func(b *testing.B) {
+			list := make(blist.List, b.N)
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				list[i] = s2
+			}
+		})
+		b.Run("*struct{string}", func(b *testing.B) {
+			list := make(blist.List, b.N)
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				list[i] = ps2
+			}
+		})
+		b.Run("[15]byte", func(b *testing.B) {
+			list := make(blist.List, b.N)
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				list[i] = b15
+			}
+		})
+		b.Run("[16]byte", func(b *testing.B) {
+			list := make(blist.List, b.N)
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				list[i] = b16
+			}
+		})
 	})
 	b.Run("generic", func(b *testing.B) {
-		var list glist.List[int]
-		for i := 0; i < b.N; i++ {
-			list = append(list, i)
-		}
+		b.Run("int64", func(b *testing.B) {
+			list := make(glist.List[int64], b.N)
+			for i := 0; i < b.N; i++ {
+				list[i] = x
+			}
+		})
+		b.Run("*int64", func(b *testing.B) {
+			list := make(glist.List[*int64], b.N)
+			for i := 0; i < b.N; i++ {
+				list[i] = px
+			}
+		})
+		b.Run("struct{int32; int64}", func(b *testing.B) {
+			list := make(glist.List[struct {
+				a int32
+				b int64
+			}], b.N)
+			for i := 0; i < b.N; i++ {
+				list[i] = s1
+			}
+		})
+		b.Run("*struct{int32; int64}", func(b *testing.B) {
+			list := make(glist.List[*struct {
+				a int32
+				b int64
+			}], b.N)
+			for i := 0; i < b.N; i++ {
+				list[i] = ps1
+			}
+		})
 	})
 	b.Run("typed", func(b *testing.B) {
-		var list tlist.IntList
-		for i := 0; i < b.N; i++ {
-			list = append(list, i)
-		}
+		b.Run("int64", func(b *testing.B) {
+			list := make([]int64, b.N)
+			for i := 0; i < b.N; i++ {
+				list[i] = x
+			}
+		})
+		b.Run("*int64", func(b *testing.B) {
+			list := make([]*int64, b.N)
+			for i := 0; i < b.N; i++ {
+				list[i] = px
+			}
+		})
+		b.Run("struct{int32; int64}", func(b *testing.B) {
+			list := make([]struct {
+				a int32
+				b int64
+			}, b.N)
+			for i := 0; i < b.N; i++ {
+				list[i] = s1
+			}
+		})
+		b.Run("*struct{int32; int64}", func(b *testing.B) {
+			list := make([]*struct {
+				a int32
+				b int64
+			}, b.N)
+			for i := 0; i < b.N; i++ {
+				list[i] = ps1
+			}
+		})
 	})
 }
 
